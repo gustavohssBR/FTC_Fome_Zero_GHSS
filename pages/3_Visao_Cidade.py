@@ -245,8 +245,8 @@ def Limpeza_dados(df_):
     return df
 
 #COLETA DE DADOS
-#df_ = pd.read_csv(r'./dataset/zomato.csv')
-df_ = pd.read_csv(r'../dataset/zomato.csv')
+df_ = pd.read_csv(r'./dataset/zomato.csv')
+#df_ = pd.read_csv(r'../dataset/zomato.csv')
 
 df = Limpeza_dados(df_)
 
