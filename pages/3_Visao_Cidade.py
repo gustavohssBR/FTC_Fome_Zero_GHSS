@@ -25,12 +25,11 @@ def barato_preco_cidade(df):
     Output: grafico de barras
     """
     df_aux = (df.groupby('city')
-                .agg({'average_cost_for_two':'mean',
-                       'moeda':'first'})
+                .agg({'price_range':'first','moeda':'first'  })
                 .reset_index())
-    df_aux = df_aux.sort_values(by='average_cost_for_two',ascending=True ).reset_index(drop=True)
+    df_aux = df_aux.sort_values(by='price_range',ascending=True ).reset_index(drop=True)
     df_aux=df_aux.head(10)
-    fig = px.bar(df_aux, x='city',y='average_cost_for_two',color='moeda')
+    fig = px.bar(df_aux, x='city',y='price_range',color='moeda')
     return fig
 
 def caro_preco_cidade(df):
@@ -44,12 +43,11 @@ def caro_preco_cidade(df):
     Output: grafico de barras
     """
     df_aux = (df.groupby('city')
-                .agg({'average_cost_for_two':'mean',
-                       'moeda':'first'})
+                .agg({'price_range':'first','moeda':'first'  })
                 .reset_index())
-    df_aux = df_aux.sort_values(by='average_cost_for_two',ascending=False ).reset_index(drop=True)
+    df_aux = df_aux.sort_values(by='price_range',ascending=False ).reset_index(drop=True)
     df_aux=df_aux.head(10)
-    fig = px.bar(df_aux, x='city',y='average_cost_for_two',color='moeda')
+    fig = px.bar(df_aux, x='city',y='price_range',color='moeda')
     return fig
 
 def  top_cidade_culinarias(df): 
