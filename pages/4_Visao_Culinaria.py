@@ -27,13 +27,13 @@ def piores_culinarias(dff):
     Input: Dataframe
     Output: grafico de barras
     """
-    df_aux = (df.loc[:,['aggregate_rating','country_code', 'cuisines',]]
+    df_aux = (df.loc[:,['aggregate_rating', 'cuisines']]
                     .groupby([ 'cuisines'])
-                    .agg({'aggregate_rating':'mean','country_code':'first'})
+                    .agg({'aggregate_rating':'mean'})
                     .reset_index())
     df_aux = df_aux.sort_values(by='aggregate_rating', ascending=True).reset_index(drop=True)
     df_aux = df_aux.head(quant_restaura)
-    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating',color='country_code')
+    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating')
     return fig
 
 def melhores_culinarias(dff):
@@ -46,13 +46,13 @@ def melhores_culinarias(dff):
     Input: Dataframe
     Output: grafico de barras
     """
-    df_aux = (df.loc[:,['aggregate_rating', 'cuisines','country_code']]
+    df_aux = (df.loc[:,['aggregate_rating', 'cuisines']]
                     .groupby([ 'cuisines' ])
-                    .agg({'aggregate_rating':'mean', 'country_code':'first'})
+                    .agg({'aggregate_rating':'mean'})
                     .reset_index())
     df_aux = df_aux.sort_values(by='aggregate_rating', ascending=False).reset_index(drop=True)
     df_aux = df_aux.head(quant_restaura)
-    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating',color='country_code')
+    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating')
     
     return fig
 
