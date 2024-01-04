@@ -177,7 +177,7 @@ st.sidebar.markdown("""___""")
 st.sidebar.markdown('## Filtros')
 
 traffic_options=st.sidebar.multiselect(
-    'Quais as condições do trânsito',
+    'Quais são os paises',
     ['Philippines', 'Brazil', 'Australia', 'United States of America',
        'Canada', 'Singapure', 'United Arab Emirates', 'India',
        'Indonesia', 'New Zeland', 'England', 'Qatar', 'South Africa',
@@ -185,11 +185,15 @@ traffic_options=st.sidebar.multiselect(
     default=['Brazil', 'India', 'United States of America',
        'Canada', 'England'] )
 
+avaliacao = st.sidebar.slider("Selecione a avaliação",  0.5, 5.0, 5.0)
+
 st.sidebar.markdown("""___""")
 st.sidebar.markdown('Powered by Comunidade DS')
 
 linhas_selecionadas = df['country_code'].isin( traffic_options )
 df_ = df.loc[linhas_selecionadas, :]
+
+df_ = df_.loc[df_['aggregate_rating'] <= avaliacao]
 
 #=========================================
 #Layout no Streamlit
