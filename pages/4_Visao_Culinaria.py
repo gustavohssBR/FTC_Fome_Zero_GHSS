@@ -272,10 +272,10 @@ st.sidebar.markdown("""___""")
 st.sidebar.markdown('Powered by Comunidade DS')
 
 linhas_selecionadas = df['country_code'].isin( paises_options )
-df = df.loc[linhas_selecionadas, :]
+dfpa = df.loc[linhas_selecionadas, :]
 
-linhas_selecionadas = df['cuisines'].isin( culinarias_options )
-df = df.loc[linhas_selecionadas, :]
+linhas_selecionadas = dfpa['cuisines'].isin( culinarias_options )
+dfcu = dfpa.loc[linhas_selecionadas, :]
 
 #=========================================
 #Layout no Streamlit
@@ -283,7 +283,7 @@ df = df.loc[linhas_selecionadas, :]
 
 with st.container():
     st.header( 'Melhores Restaurantes dos Principais tipos Culinários' )
-    dff = df[['restaurant_id','aggregate_rating', 'restaurant_name', 'cuisines', 'valor_duas_pessoas', 'city', 'country_code']]
+    dff = dfcu[['restaurant_id','aggregate_rating', 'restaurant_name', 'cuisines', 'valor_duas_pessoas', 'city', 'country_code']]
     df_aux = dff.groupby('restaurant_id').agg({ 'restaurant_name':'first',
                                                 'country_code':'first',
                                                 'city':'first',
@@ -307,7 +307,7 @@ with st.container():
 
 with st.container():    
     st.header(f'Top {quant_restaura} Restaurantes' )
-    df_aux = top_restaurante(df)
+    df_aux = top_restaurante(dfcu)
     st.dataframe(df_aux)
     
 
@@ -317,12 +317,12 @@ with st.container():
     col1, col2 = st.columns(2)
     with col1:
         st.header(f'Top {quant_restaura} Melhores tipos de Culinárias')
-        fig = melhores_culinarias(df)
+        fig = melhores_culinarias(dfpa)
         st.plotly_chart(fig, use_container_width = True)
     
     with col2:
         st.header(f'Top {quant_restaura} Piores tipos de Culinárias')
-        fig = piores_culinarias(df)
+        fig = piores_culinarias(dfpa)
         st.plotly_chart(fig, use_container_width = True)
 
 
