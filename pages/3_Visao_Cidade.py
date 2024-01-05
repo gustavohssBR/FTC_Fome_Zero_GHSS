@@ -268,7 +268,7 @@ st.sidebar.markdown('## Filtros')
 
 
 traffic_options=st.sidebar.multiselect(
-    'Quais são os paises',
+    'Filtro de Países',
     ['Philippines', 'Brazil', 'Australia', 'United States of America',
        'Canada', 'Singapure', 'United Arab Emirates', 'India',
        'Indonesia', 'New Zeland', 'England', 'Qatar', 'South Africa',
