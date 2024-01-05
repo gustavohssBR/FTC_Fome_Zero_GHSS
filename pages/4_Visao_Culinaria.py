@@ -16,6 +16,52 @@ st.set_page_config( page_title='Visão Culinária', page_icon='🍟', layout='wi
 
 #FUNÇÕES
 
+def top_restauranteparamap(df):
+    """ 
+    Essa função tem a responsabilidade de retornar os 10 melhores restaurantes.
+    1. agrupando os restaurantes unicas pelas cidades, pais, culinaria, valor para duas pessoas, quantidade de avaliações por restaurante e a media da avaliação por restaurante. 
+    2. e ordenando para pegar as 10 cidade com as maiores medias das avaliações.
+    
+    Input: Dataframe
+    Output: Dataframe
+    """
+    dff = df[['restaurant_id', 'restaurant_name', 'country_code', 'city', 'cuisines', 'valor_duas_pessoas',  'aggregate_rating', 'votes','latitude','longitude','rating_color']]
+    df_aux = dff.groupby('restaurant_id').agg({ 'restaurant_name':'first',
+                                                'country_code':'first',
+                                                'city':'first',
+                                                'cuisines':'first' ,
+                                                'valor_duas_pessoas':'first' ,
+                                                'aggregate_rating':'mean',
+                                                'votes':'first',
+                                                'latitude':'first',
+                                                'longitude':'first',
+                                                'rating_color':'first'}).reset_index()
+    df_aux = df_aux.sort_values(by='aggregate_rating', ascending=False).reset_index(drop=True)
+    df_aux = df_aux.head(quant_restaura)
+    return df_aux
+
+def mapas(df):
+    """ 
+    Essa função tem a responsabilidade de plotar um mapa com a localização dos restaurantes.
+    1. utilizando as colunas de latitude e longitude para encoratrar a localizaçao dos restaurantes. 
+    2. a coluna de rating_color para diferenciar a cor dos icon do restaurante por avaliações.
+    3. e utilizar a função de icon com a variavel glyphicon-home para que a localização tenha o simbolo de uma casa.
+    4. e usar a funçao popup_content para colocar informações extras quando passar encima da localização.
+   
+    Input: Dataframe
+    Output: mapa
+    """
+    df_axc = df.copy()
+    m = folium.Map()
+    marker_cluster = MarkerCluster().add_to(m)
+    for index ,location_info in df_axc.iterrows():
+        popup_content =  f"<b>{location_info['restaurant_name']} </b>   <br> tipo:{location_info['cuisines']}  <br> avaliação:{location_info['aggregate_rating']} / 5.0  <br> valor duas pessoas: {location_info['valor_duas_pessoas']}"
+
+        folium.Marker([location_info['latitude'], 
+                       location_info['longitude']],
+                       popup=popup_content,
+                       icon=folium.Icon(color= location_info['rating_color'], icon="glyphicon-home")).add_to(marker_cluster)
+    return m
 
 def piores_culinarias(dff):
     """ 
@@ -305,10 +351,17 @@ with st.container():
                       help = help_text)
 
 
-with st.container():    
-    st.header(f'Top {quant_restaura} Restaurantes' )
-    df_aux = top_restaurante(dfcu)
-    st.dataframe(df_aux)
+with st.container():
+    col1, col2 = st.columns(2)
+    with col1:
+        st.header(f'Top {quant_restaura} Restaurantes' )
+        df_aux = top_restaurante(dfcu)
+        st.dataframe(df_aux)
+    
+    with col2:
+        st.header(f'Top {quant_restaura} Restaurantes no mapa' )
+        dfws = top_restauranteparamap(dfcu)
+        folium_static(mapas(dfws), width=670, height=400)
     
 
     
