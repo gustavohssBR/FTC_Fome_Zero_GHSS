@@ -174,7 +174,7 @@ st.sidebar.markdown('## Filtros')
 
 
 traffic_options=st.sidebar.multiselect(
-    'Quais as condições do trânsito',
+    'Quais são os paises',
     ['Philippines', 'Brazil', 'Australia', 'United States of America',
        'Canada', 'Singapure', 'United Arab Emirates', 'India',
        'Indonesia', 'New Zeland', 'England', 'Qatar', 'South Africa',
