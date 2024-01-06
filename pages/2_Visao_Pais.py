@@ -11,7 +11,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-st.set_page_config( page_title='Visão Paises', page_icon='🌎', layout='wide' )
+st.set_page_config( page_title='Visão Restaurante', page_icon='🌎', layout='wide' )
 
 #FUNÇÕES 
 def valor_pessoa_paises(df):
@@ -25,10 +25,13 @@ def valor_pessoa_paises(df):
     Input: Dataframe
     Output: Grafico de Barras
     """
-    df_aux = df.groupby('country_code').agg({'average_cost_for_two':'mean',
-                                 'moeda':'first'  }).reset_index()
-    df_aux = df_aux.sort_values(by='average_cost_for_two',ascending=False ).reset_index(drop=True)
-    fig = px.bar(df_aux, x='country_code',y='average_cost_for_two',color='moeda')
+    df_aux =  df.sort_values(by=['restaurant_id']).reset_index(drop = True)
+    df_aux = (df_aux.loc[:, [ 'restaurant_name','aggregate_rating','Valor_em_USD']]
+                    .groupby(['restaurant_name'])
+                    .agg({'Valor_em_USD':'mean','aggregate_rating':'mean'})
+                    .reset_index())
+    df_aux = df_aux.sort_values('aggregate_rating',ascending=False)
+    fig = px.bar(df_aux.head(10), x='restaurant_name', y='aggregate_rating',color = 'Valor_em_USD')
     return fig
 
 #LIMPEZA DE DADOS
@@ -138,21 +141,39 @@ def Limpeza_dados(df_):
     df['valor_duas_pessoas'] = df['average_cost_for_two_str'] + df['moeda']
     
     # CRIANDO UMA COLUNA COM AS LISTA DOS TIPOS DE CULINARIAS
-    #Divida as strings em torno do separador que e o , delimitador fornecido.
-    #df['cuisines_distict'] = df['cuisines'].str.split(r', |,')
-    #df['unique_cuisines'] = df['cuisines'].apply(lambda x: extrair_primeira_palavra(x))
     df["cuisines"] = df.loc[:, "cuisines"].apply(lambda x: x.split(",")[0])
 
+    return df
+#df = Limpeza_dados(df_)
+
+# FUNÇAO PARA CONVERTER AS MOEDAS PARA DOLLAR
+#def converter_para_dolar(moeda, valor):
+    #currency_rates = CurrencyRates()
+    #return currency_rates.convert(moeda, 'USD', valor)
+
+# Aplicar a função de conversão a cada linha do DataFrame usando apply e lambda
+#df['Valor_em_USD'] = df.apply(lambda row: converter_para_dolar(row['moeda'], row['average_cost_for_two']), axis=1)
+
+## CONVERTER A COLUNA DE VAOLOR MEDIO PARA DUAS PESSOAS PARA DOLAR
+#nome_do_arquivo = 'dados.csv'
+#df.to_csv(nome_do_arquivo, index=False)
+#from IPython.display import FileLink
+# Criando um link de download para o arquivo CSV
+#display(FileLink(nome_do_arquivo))
 
 
-    
+def limpeza_extra(df):
+    df['Valor_em_USD'] = df['Valor_em_USD'].round(2)
+    df['average_cost_for_two_str'] = df['Valor_em_USD'].astype(str)
+    # Fundir as colunas em uma nova coluna
+    df['valor_duas_pessoas'] = df['average_cost_for_two_str'] + df['moeda']
     return df
 
 #COLETA DE DADOS
-df_ = pd.read_csv(r'./dataset/zomato.csv')
-#df_ = pd.read_csv(r'../dataset/zomato.csv')
+df_ = pd.read_csv(r'./dataset/dados.csv')
+#df_ = pd.read_csv(r'../dataset/dados.csv')
 
-df = Limpeza_dados(df_)
+df = limpeza_extra(df_)
 
 #forma de printar o as informações no terminal 
 #python Paises.py
@@ -174,7 +195,7 @@ st.sidebar.markdown('## Filtros')
 
 
 traffic_options=st.sidebar.multiselect(
-    'Filtro de Países',
+    'Quais as condições do trânsito',
     ['Philippines', 'Brazil', 'Australia', 'United States of America',
        'Canada', 'Singapure', 'United Arab Emirates', 'India',
        'Indonesia', 'New Zeland', 'England', 'Qatar', 'South Africa',
@@ -192,7 +213,7 @@ df = df.loc[linhas_selecionadas, :]
 #Layout no Streamlit
 #=========================================
 with st.container():
-    st.markdown('## valor medio para duas pessoas por Paises ')
+    st.markdown('## Os restaurantes com as maiores avaliações e com o valor medio para duas pessoas em dollar ')
     fig = valor_pessoa_paises(df)
     st.plotly_chart(fig, use_container_width=True)
     
@@ -200,33 +221,34 @@ with st.container():
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('## quantidade de culinárias por paises ')
-        df_aux = df.loc[:,['country_code', 'cuisines']].groupby([ 'country_code' ]).nunique().reset_index()
-        fig = px.bar(df_aux, x='country_code',y='cuisines')
+        st.markdown('## Os Restaurantes com a maior quantidades de votos')
+        df_aux = df.loc[:,[ 'restaurant_name','votes', 'aggregate_rating' ]].groupby(['restaurant_name']).agg({'aggregate_rating':'mean', 'votes':'sum'}).reset_index()
+        df_aux = df_aux.sort_values('votes',ascending=False)
+        fig = px.bar(df_aux.head(10), x= 'restaurant_name', y= 'votes',color='aggregate_rating' )
         st.plotly_chart(fig, use_container_width=True)
         
     with col2:
-        st.markdown('## quantidade de cidade por paises ')
-        df_axc = df.loc[:, [ 'country_code','city' ] ].groupby([ 'country_code']).nunique().reset_index()
-        fig = px.bar(df_axc, x='country_code', y ='city')
+        st.markdown('## Os restaurantes com o maior valor medio para duas pessoas em dollar')
+        df_aux = df.loc[:, [ 'restaurant_name','Valor_em_USD','aggregate_rating' ]].groupby(['restaurant_name']).agg({'Valor_em_USD':'mean','aggregate_rating':'mean'}).reset_index()
+        df_aux = df_aux.sort_values('Valor_em_USD',ascending=False)
+        fig = px.bar(df_aux.head(10),x='restaurant_name',y='Valor_em_USD',color='aggregate_rating')
         st.plotly_chart(fig, use_container_width=True)
     
 with st.container():
     col1, col2 = st.columns(2)
     
     with col1:
-        st.header('Media de quantidade de avaliações por paises')
-        df_aux = df.loc[:,['country_code','votes']].groupby(['country_code']).mean().reset_index()
-        fig = px.bar(df_aux, x='country_code', y='votes')
+        st.header('Os Paises que tem mais Restaurante')
+        df_aux = df.loc[:,['country_code','restaurant_name','moeda']].groupby(['country_code']).agg({'moeda':'first','restaurant_name':'count'}).reset_index()
+        df_aux = df_aux.sort_values('restaurant_name',ascending=False)
+        fig = px.bar(df_aux.head(10), x='country_code', y='restaurant_name',color='moeda')
         st.plotly_chart(fig, use_container_width=True)
         
     with col2:
-        st.header('restaurantes com o nível de preço igual a 4 ')
-        df_aux = df.loc[:, [ 'country_code', 'price_range', 'restaurant_id' ] ].groupby([ 'country_code','price_range']).nunique().reset_index()
-        df_aux = df_aux.loc[df_aux['price_range'] == 4]
-        fig = px.bar(df_aux, x='country_code',y='restaurant_id')
+        st.header('restaurantes com o nível de preço menor que 2.5 com a melhor avaliação e o País')
+        df_aux = df.loc[df['price_range'] <= 2.5]
+        df_aux = df_aux.loc[:, ['aggregate_rating', 'restaurant_name', 'country_code' ] ].groupby(['restaurant_name']).agg({'aggregate_rating':'mean','country_code':'first'}).reset_index()
+        df_aux = df_aux.sort_values('aggregate_rating',ascending=False)
+        fig = px.bar(df_aux.head(10), x='restaurant_name',y='aggregate_rating',color='country_code')
         st.plotly_chart(fig, use_container_width=True)
-
-        
-    
     
