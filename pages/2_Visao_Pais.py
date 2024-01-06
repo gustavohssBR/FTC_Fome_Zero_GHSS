@@ -181,7 +181,7 @@ df = limpeza_extra(df_)
 #=========================================
 #Barra lateral
 #=========================================
-st.header('Marketplace - Visão Pais')
+st.header('Marketplace - Visão Restaurantes')
 
 image_path = "Fome_Zero_logo.png"
 image = Image.open(image_path)
