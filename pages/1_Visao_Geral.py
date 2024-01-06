@@ -27,7 +27,7 @@ def mapas(df):
     m = folium.Map()
     marker_cluster = MarkerCluster().add_to(m)
     for index ,location_info in df_axc.iterrows():
-        popup_content =  f"<b>{location_info['restaurant_name']} </b>   <br> tipo:{location_info['cuisines']}  <br> avaliação:{location_info['aggregate_rating']} / 5.0  <br> valor duas pessoas:{location_info['valor_duas_pessoas']}"
+        popup_content =  f"<b>{location_info['restaurant_name']} </b>   <br> tipo:{location_info['cuisines']}  <br> avaliação:{location_info['aggregate_rating']} / 5.0  <br> valor duas pessoas em dollar:{location_info['valor_duas_pessoas']}"
 
         folium.Marker([location_info['latitude'], 
                        location_info['longitude']],
@@ -147,16 +147,37 @@ def Limpeza_dados(df_):
     #df['unique_cuisines'] = df['cuisines'].apply(lambda x: extrair_primeira_palavra(x))
     df["cuisines"] = df.loc[:, "cuisines"].apply(lambda x: x.split(",")[0])
 
+    return df
 
+#df = Limpeza_dados(df_)
 
-    
+# FUNÇAO PARA CONVERTER AS MOEDAS PARA DOLLAR
+#def converter_para_dolar(moeda, valor):
+    #currency_rates = CurrencyRates()
+    #return currency_rates.convert(moeda, 'USD', valor)
+
+# Aplicar a função de conversão a cada linha do DataFrame usando apply e lambda
+#df['Valor_em_USD'] = df.apply(lambda row: converter_para_dolar(row['moeda'], row['average_cost_for_two']), axis=1)
+
+## CONVERTER A COLUNA DE VAOLOR MEDIO PARA DUAS PESSOAS PARA DOLAR
+#nome_do_arquivo = 'dados.csv'
+#df.to_csv(nome_do_arquivo, index=False)
+#from IPython.display import FileLink
+# Criando um link de download para o arquivo CSV
+#display(FileLink(nome_do_arquivo))
+
+def limpeza_extra(df):
+    df['Valor_em_USD'] = df['Valor_em_USD'].round(2)
+    df['average_cost_for_two_str'] = df['Valor_em_USD'].astype(str)
+    # Fundir as colunas em uma nova coluna
+    df['valor_duas_pessoas'] = df['average_cost_for_two_str'] + df['moeda']
     return df
 
 #COLETA DE DADOS
-df_ = pd.read_csv(r'./dataset/zomato.csv')
-#df_ = pd.read_csv(r'../dataset/zomato.csv')
+df_ = pd.read_csv(r'./dataset/dados.csv')
+#df_ = pd.read_csv(r'../dataset/dados.csv')
 
-df = Limpeza_dados(df_)
+df = limpeza_extra(df_)
 
 #forma de printar o as informações no terminal 
 #python Geral.py
@@ -177,7 +198,7 @@ st.sidebar.markdown("""___""")
 st.sidebar.markdown('## Filtros')
 
 traffic_options=st.sidebar.multiselect(
-    'Filtro de Países',
+    'Quais as condições do trânsito',
     ['Philippines', 'Brazil', 'Australia', 'United States of America',
        'Canada', 'Singapure', 'United Arab Emirates', 'India',
        'Indonesia', 'New Zeland', 'England', 'Qatar', 'South Africa',
@@ -190,11 +211,11 @@ avaliacao = st.sidebar.slider("Selecione a avaliação",  0.5, 5.0, 5.0)
 st.sidebar.markdown("""___""")
 st.sidebar.markdown('Powered by Comunidade DS')
 
+
 linhas_selecionadas = df['country_code'].isin( traffic_options )
 df_ = df.loc[linhas_selecionadas, :]
 
 df_ = df_.loc[df_['aggregate_rating'] <= avaliacao]
-
 #=========================================
 #Layout no Streamlit
 #=========================================
@@ -225,8 +246,6 @@ with st.container():
 with st.container():
     st.header('Country Maps')
     folium_static(mapas(df_), width=1024, height=600)
-
-
     
     
     
