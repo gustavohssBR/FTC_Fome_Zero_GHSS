@@ -55,7 +55,7 @@ def mapas(df):
     m = folium.Map()
     marker_cluster = MarkerCluster().add_to(m)
     for index ,location_info in df_axc.iterrows():
-        popup_content =  f"<b>{location_info['restaurant_name']} </b>   <br> tipo:{location_info['cuisines']}  <br> avaliação:{location_info['aggregate_rating']} / 5.0  <br> valor duas pessoas: {location_info['valor_duas_pessoas']}"
+        popup_content =  f"<b>{location_info['restaurant_name']} </b>   <br> tipo:{location_info['cuisines']}  <br> avaliação:{location_info['aggregate_rating']} / 5.0  <br> valor duas pessoas em dollar: {location_info['valor_duas_pessoas']}"
 
         folium.Marker([location_info['latitude'], 
                        location_info['longitude']],
@@ -73,13 +73,13 @@ def piores_culinarias(dff):
     Input: Dataframe
     Output: grafico de barras
     """
-    df_aux = (df.loc[:,['aggregate_rating', 'cuisines']]
+    df_aux = (df.loc[:,['aggregate_rating','Valor_em_USD', 'cuisines',]]
                     .groupby([ 'cuisines'])
-                    .agg({'aggregate_rating':'mean'})
+                    .agg({'aggregate_rating':'mean','Valor_em_USD':'first'})
                     .reset_index())
     df_aux = df_aux.sort_values(by='aggregate_rating', ascending=True).reset_index(drop=True)
     df_aux = df_aux.head(quant_restaura)
-    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating')
+    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating', color='Valor_em_USD')
     return fig
 
 def melhores_culinarias(dff):
@@ -92,13 +92,13 @@ def melhores_culinarias(dff):
     Input: Dataframe
     Output: grafico de barras
     """
-    df_aux = (df.loc[:,['aggregate_rating', 'cuisines']]
+    df_aux = (df.loc[:,['aggregate_rating', 'cuisines','Valor_em_USD']]
                     .groupby([ 'cuisines' ])
-                    .agg({'aggregate_rating':'mean'})
+                    .agg({'aggregate_rating':'mean', 'Valor_em_USD':'first'})
                     .reset_index())
     df_aux = df_aux.sort_values(by='aggregate_rating', ascending=False).reset_index(drop=True)
     df_aux = df_aux.head(quant_restaura)
-    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating')
+    fig = px.bar(df_aux, x='cuisines', y ='aggregate_rating',color='Valor_em_USD')
     
     return fig
 
@@ -235,16 +235,38 @@ def Limpeza_dados(df_):
     #df['unique_cuisines'] = df['cuisines'].apply(lambda x: extrair_primeira_palavra(x))
     df["cuisines"] = df.loc[:, "cuisines"].apply(lambda x: x.split(",")[0])
 
+    return df
+
+#df = Limpeza_dados(df_)
+
+# FUNÇAO PARA CONVERTER AS MOEDAS PARA DOLLAR
+#def converter_para_dolar(moeda, valor):
+    #currency_rates = CurrencyRates()
+    #return currency_rates.convert(moeda, 'USD', valor)
+
+# Aplicar a função de conversão a cada linha do DataFrame usando apply e lambda
+#df['Valor_em_USD'] = df.apply(lambda row: converter_para_dolar(row['moeda'], row['average_cost_for_two']), axis=1)
+
+## CONVERTER A COLUNA DE VAOLOR MEDIO PARA DUAS PESSOAS PARA DOLAR
+#nome_do_arquivo = 'dados.csv'
+#df.to_csv(nome_do_arquivo, index=False)
+#from IPython.display import FileLink
+# Criando um link de download para o arquivo CSV
+#display(FileLink(nome_do_arquivo))
 
 
-    
+def limpeza_extra(df):
+    df['Valor_em_USD'] = df['Valor_em_USD'].round(2)
+    df['average_cost_for_two_str'] = df['Valor_em_USD'].astype(str)
+    # Fundir as colunas em uma nova coluna
+    df['valor_duas_pessoas'] = df['average_cost_for_two_str'] + df['moeda']
     return df
 
 #COLETA DE DADOS
-df_ = pd.read_csv(r'./dataset/zomato.csv')
-#df_ = pd.read_csv(r'../dataset/zomato.csv')
+#df_ = pd.read_csv(r'./dataset/dados.csv')
+df_ = pd.read_csv(r'../dataset/dados.csv')
 
-df = Limpeza_dados(df_)
+df = limpeza_extra(df_)
 
 #forma de printar o as informações no terminal 
 #python Paises.py
@@ -311,8 +333,8 @@ culinarias_options = st.sidebar.multiselect(
        'Izgara', 'Home-made', 'Giblets', 'Fresh Fish', 'Restaurant Cafe',
        'Kumpir', 'Döner', 'Turkish Pizza', 'Ottoman', 'Old Turkish Bars',
        'Kokoreç'] ,
-    default=['Italian', 'American',  'Pizza', 'Japanese',
-             'Brazilian', 'Arabian', 'Home-made'] )
+    default=['Italian', 'European', 'Filipino', 'American', 'Korean', 'Pizza',
+       'Taiwanese', 'Japanese', 'Coffee', 'Chinese', 'Seafood'] )
 
 st.sidebar.markdown("""___""")
 st.sidebar.markdown('Powered by Comunidade DS')
@@ -362,7 +384,7 @@ with st.container():
         st.header(f'Top {quant_restaura} Restaurantes no mapa' )
         dfws = top_restauranteparamap(dfcu)
         folium_static(mapas(dfws), width=670, height=400)
-    
+
 
     
 
@@ -377,13 +399,3 @@ with st.container():
         st.header(f'Top {quant_restaura} Piores tipos de Culinárias')
         fig = piores_culinarias(dfpa)
         st.plotly_chart(fig, use_container_width = True)
-
-
-
-
-# a forma de rodar o python no terminal
-##__ python Culinaria.py __##
-# a forma de rodar o streanlit no terminal
-##__ streamlit run Culinaria.py __##
-# ver todos os itens que tem na pasta
-##__ ls __##
