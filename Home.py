@@ -119,21 +119,39 @@ def Limpeza_dados(df_):
     df['valor_duas_pessoas'] = df['average_cost_for_two'] + df['moeda']
     
     # CRIANDO UMA COLUNA COM AS LISTA DOS TIPOS DE CULINARIAS
-    #Divida as strings em torno do separador que e o , delimitador fornecido.
-    #df['cuisines_distict'] = df['cuisines'].str.split(r', |,')
-    #df['unique_cuisines'] = df['cuisines'].apply(lambda x: extrair_primeira_palavra(x))
     df["cuisines"] = df.loc[:, "cuisines"].apply(lambda x: x.split(",")[0])
 
+    return df
 
+#df = Limpeza_dados(df_)
 
-    
+# FUNÇAO PARA CONVERTER AS MOEDAS PARA DOLLAR
+#def converter_para_dolar(moeda, valor):
+    #currency_rates = CurrencyRates()
+    #return currency_rates.convert(moeda, 'USD', valor)
+
+# Aplicar a função de conversão a cada linha do DataFrame usando apply e lambda
+#df['Valor_em_USD'] = df.apply(lambda row: converter_para_dolar(row['moeda'], row['average_cost_for_two']), axis=1)
+
+## CONVERTER A COLUNA DE VAOLOR MEDIO PARA DUAS PESSOAS PARA DOLAR
+#nome_do_arquivo = 'dados.csv'
+#df.to_csv(nome_do_arquivo, index=False)
+#from IPython.display import FileLink
+# Criando um link de download para o arquivo CSV
+#display(FileLink(nome_do_arquivo))
+
+def limpeza_extra(df):
+    df['Valor_em_USD'] = df['Valor_em_USD'].round(2)
+    df['average_cost_for_two_str'] = df['Valor_em_USD'].astype(str)
+    # Fundir as colunas em uma nova coluna
+    df['valor_duas_pessoas'] = df['average_cost_for_two_str'] + df['moeda']
     return df
 
 #COLETA DE DADOS
-df_ = pd.read_csv(r'./dataset/zomato.csv')
-#df_ = pd.read_csv(r'../dataset/zomato.csv')
+df_ = pd.read_csv(r'./dataset/dados.csv')
+#df_ = pd.read_csv(r'../dataset/dados.csv')
 
-df = Limpeza_dados(df_)
+df = limpeza_extra(df_)
 
 image = Image.open('Fome_Zero_logo.png')
 
