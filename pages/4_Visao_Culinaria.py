@@ -263,8 +263,8 @@ def limpeza_extra(df):
     return df
 
 #COLETA DE DADOS
-#df_ = pd.read_csv(r'./dataset/dados.csv')
-df_ = pd.read_csv(r'../dataset/dados.csv')
+df_ = pd.read_csv(r'./dataset/dados.csv')
+#df_ = pd.read_csv(r'../dataset/dados.csv')
 
 df = limpeza_extra(df_)
 
