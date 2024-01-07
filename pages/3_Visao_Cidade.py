@@ -271,7 +271,7 @@ df = limpeza_extra(df_)
 #=========================================
 #Barra lateral
 #=========================================
-st.header('Marketplace - Visão Cidade')
+st.header('🏙️ Visão Cidade')
 
 image_path = "Fome_Zero_logo.png"
 image = Image.open(image_path)
