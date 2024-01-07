@@ -11,7 +11,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 
-st.set_page_config( page_title='Visão Restaurante', page_icon='🌎', layout='wide' )
+st.set_page_config( page_title='Visão Restaurante', page_icon='🍽️', layout='wide' )
 
 #FUNÇÕES 
 def valor_pessoa_paises(df):
@@ -181,7 +181,7 @@ df = limpeza_extra(df_)
 #=========================================
 #Barra lateral
 #=========================================
-st.header('Marketplace - Visão Restaurantes')
+st.header('🍽️ Visão Restaurantes')
 
 image_path = "Fome_Zero_logo.png"
 image = Image.open(image_path)
