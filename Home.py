@@ -186,7 +186,7 @@ st.markdown(
     - Visão Geral:
         - Uma visao Geral DataFrame.
         - E um Mapa com os Restaurantes com as informações do tipo de culinaria, a avaliação e o preço médio para duas pessoas.
-    - visão Paises:
+    - visão Restaurante:
         - Os indicadores dos Restaurantes.
     - Visão Cidades:
         - OS indicadores das Cidades.
