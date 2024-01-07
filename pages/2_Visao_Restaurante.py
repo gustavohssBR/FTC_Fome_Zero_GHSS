@@ -215,6 +215,111 @@ df = df.loc[linhas_selecionadas, :]
 #Layout no Streamlit
 #=========================================
 with st.container():
+    st.markdown('## quantidade de avaliações total' )
+    col1, col2, col3 = st.columns(3)
+       
+    with col1:
+        #Has_Online_delivery: se tem ou nao entregas onlines.
+        #1 - Yes
+        #0 - No
+        df_yes = df.loc[df['has_online_delivery'] == 1]
+        df_yes = df_yes.loc[:, [ 'restaurant_name','aggregate_rating' ]].groupby(['restaurant_name']).mean().reset_index()
+        
+        df_no = df.loc[df['has_online_delivery'] == 0]
+        df_no = df_no.loc[:, [ 'restaurant_name','aggregate_rating' ]].groupby(['restaurant_name']).mean().reset_index()
+        
+        total_yes = int(df_yes["aggregate_rating"].sum())
+        total_no = int(df_no["aggregate_rating"].sum())
+
+        col1.metric(label=f"Fazem pedidos online / Não faz pedidos online",
+                    value=f"{total_yes} / {total_no}")
+        
+    with col2:
+        #Has_Table_booking: tem disponibilidade nas mesas.
+        #        0 - Yes
+        #        1 - No 
+        df_yes = df.loc[df['has_table_booking'] == 0]
+        df_yes = df_yes.loc[:, [ 'restaurant_id','aggregate_rating' ]].groupby(['restaurant_id']).mean().reset_index()
+
+        df_no = df.loc[df['has_table_booking'] == 1]
+        df_no = df_no.loc[:, [ 'restaurant_id','aggregate_rating' ]].groupby(['restaurant_id']).mean().reset_index()
+        
+        total_yes = int(df_yes["aggregate_rating"].sum())
+        total_no = int(df_no["aggregate_rating"].sum())
+
+        col2.metric(label=f"disponibilidade nas mesas /  Não tem disponibilidade nas mesas",
+                    value=f"{total_yes} / {total_no}")
+
+    with col3:
+        #is_delivering_now: se esta entregando agora ou nao.
+        #    0 - Yes
+        #    1 - No
+        df_yes = df.loc[df['is_delivering_now'] == 0]
+        df_yes = df_yes.loc[:, [ 'restaurant_id','aggregate_rating' ]].groupby(['restaurant_id']).mean().reset_index()
+        print('esta entregando agora {:.1f}'.format(df_yes['aggregate_rating'].sum()))
+
+        df_no = df.loc[df['is_delivering_now'] == 1]
+        df_no = df_no.loc[:, [ 'restaurant_id','aggregate_rating' ]].groupby(['restaurant_id']).mean().reset_index()
+        
+        total_yes = int(df_yes["aggregate_rating"].sum())
+        total_no = int(df_no["aggregate_rating"].sum())
+
+        col3.metric(label=f"esta entregando agora / Não esta entregando agora",
+                    value=f"{total_yes} / {total_no}")
+
+with st.container():
+    st.markdown('## o custo para dusas pessas em dollar total' )
+    col1, col2, col3 = st.columns(3)
+       
+    with col1:
+        #Has_Online_delivery: se tem ou nao entregas onlines.
+        #1 - Yes
+        #0 - No
+        df_yes = df.loc[df['has_online_delivery'] == 1]
+        df_yes = df_yes.loc[:, [ 'restaurant_name','Valor_em_USD' ]].groupby(['restaurant_name']).mean().reset_index()
+        
+        df_no = df.loc[df['has_online_delivery'] == 0]
+        df_no = df_no.loc[:, [ 'restaurant_name','Valor_em_USD' ]].groupby(['restaurant_name']).mean().reset_index()
+        
+        total_yes = int(df_yes["Valor_em_USD"].sum())
+        total_no = int(df_no["Valor_em_USD"].sum())
+
+        col1.metric(label=f"Fazem pedidos online / Não faz pedidos online",
+                    value=f"{total_yes} / {total_no}")
+        
+    with col2:
+        #Has_Table_booking: tem disponibilidade nas mesas.
+        #        0 - Yes
+        #        1 - No 
+        df_yes = df.loc[df['has_table_booking'] == 0]
+        df_yes = df_yes.loc[:, [ 'restaurant_id','Valor_em_USD' ]].groupby(['restaurant_id']).mean().reset_index()
+
+        df_no = df.loc[df['has_table_booking'] == 1]
+        df_no = df_no.loc[:, [ 'restaurant_id','Valor_em_USD' ]].groupby(['restaurant_id']).mean().reset_index()
+        
+        total_yes = int(df_yes["Valor_em_USD"].sum())
+        total_no = int(df_no["Valor_em_USD"].sum())
+
+        col2.metric(label=f"disponibilidade nas mesas /  Não tem disponibilidade nas mesas",
+                    value=f"{total_yes} / {total_no}")
+
+    with col3:
+        #is_delivering_now: se esta entregando agora ou nao.
+        #    0 - Yes
+        #    1 - No
+        df_yes = df.loc[df['is_delivering_now'] == 0]
+        df_yes = df_yes.loc[:, [ 'restaurant_id','Valor_em_USD' ]].groupby(['restaurant_id']).mean().reset_index()
+        
+        df_no = df.loc[df['is_delivering_now'] == 1]
+        df_no = df_no.loc[:, [ 'restaurant_id','Valor_em_USD' ]].groupby(['restaurant_id']).mean().reset_index()
+        
+        total_yes = int(df_yes["Valor_em_USD"].sum())
+        total_no = int(df_no["Valor_em_USD"].sum())
+
+        col3.metric(label=f"esta entregando agora / Não esta entregando agora",
+                    value=f"{total_yes} / {total_no}")
+
+with st.container():
     st.markdown('## Os restaurantes com as maiores avaliações e com o valor medio para duas pessoas em dollar ')
     fig = valor_pessoa_paises(df)
     st.plotly_chart(fig, use_container_width=True)
