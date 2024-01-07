@@ -177,7 +177,8 @@ def convert_df(df):
 
 st.sidebar.markdown("""___""")
 
-st.write('# Alimentando Sonhos, Saciando Vidas: Juntos Rumo ao Fome Zero!')
+st.write('# Fome Zero!')
+st.write('## Alimentando Sonhos, Saciando Vidas: Juntos Rumo ao Fome Zero!')
 st.markdown(
     """
     Essa Dashboard foi construido para acopanhar as métricas de crescimento dos Restaurantes por Cidades, Paises e Tipos de Culinárias.
