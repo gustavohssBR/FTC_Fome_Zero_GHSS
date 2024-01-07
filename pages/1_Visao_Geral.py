@@ -171,6 +171,8 @@ def limpeza_extra(df):
     df['average_cost_for_two_str'] = df['Valor_em_USD'].astype(str)
     # Fundir as colunas em uma nova coluna
     df['valor_duas_pessoas'] = df['average_cost_for_two_str'] + df['moeda']
+    df = df.loc[df['restaurant_name']!="d'Arry's Verandah Restaurant"]
+    df = df.reset_index(drop = True)
     return df
 
 #COLETA DE DADOS
