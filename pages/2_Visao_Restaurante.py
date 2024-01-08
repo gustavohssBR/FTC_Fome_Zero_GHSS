@@ -346,9 +346,9 @@ with st.container():
     
     with col1:
         st.header('Os Paises que tem mais Restaurante')
-        df_aux = df.loc[:,['country_code','restaurant_name','moeda']].groupby(['country_code']).agg({'moeda':'first','restaurant_name':'count'}).reset_index()
+        df_aux = df.loc[:,['country_code','restaurant_name','Valor_em_USD']].groupby(['country_code']).agg({'Valor_em_USD':'sum','restaurant_name':'count'}).reset_index()
         df_aux = df_aux.sort_values('restaurant_name',ascending=False)
-        fig = px.bar(df_aux.head(10), x='country_code', y='restaurant_name',color='moeda')
+        fig = px.bar(df_aux.head(10), x='country_code', y='restaurant_name',color='Valor_em_USD')
         st.plotly_chart(fig, use_container_width=True)
         
     with col2:
