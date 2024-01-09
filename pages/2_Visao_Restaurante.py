@@ -336,7 +336,7 @@ with st.container():
         
     with col2:
         st.markdown('## Os restaurantes com o maior valor medio para duas pessoas em dollar')
-        df_aux = df.loc[:, [ 'restaurant_name','Valor_em_USD','aggregate_rating' ]].groupby(['restaurant_name']).agg({'Valor_em_USD':'mean','aggregate_rating':'mean'}).reset_index()
+        df_aux = df.loc[:, [ 'restaurant_name','Valor_em_USD','aggregate_rating' ]].groupby(['restaurant_name']).agg({'Valor_em_USD':'sum','aggregate_rating':'mean'}).reset_index()
         df_aux = df_aux.sort_values('Valor_em_USD',ascending=False)
         fig = px.bar(df_aux.head(10),x='restaurant_name',y='Valor_em_USD',color='aggregate_rating')
         st.plotly_chart(fig, use_container_width=True)
